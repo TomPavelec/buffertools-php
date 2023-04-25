@@ -8,14 +8,9 @@ use BitWasp\Buffertools\Types\TypeInterface;
 
 class Template implements \Countable
 {
-    /**
-     * @var TypeInterface[]
-     */
-    private $template = [];
+    /** @var TypeInterface[] */
+    private array $template = [];
 
-    /**
-     * @param array $items
-     */
     public function __construct(array $items = [])
     {
         foreach ($items as $item) {
@@ -23,15 +18,19 @@ class Template implements \Countable
         }
     }
 
+
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
+     *
      * @see \Countable::count()
+     *
      * @return int
      */
     public function count(): int
     {
-        return count($this->template);
+        return \count($this->template);
     }
+
 
     /**
      * Return an array of type serializers in the template
@@ -43,31 +42,31 @@ class Template implements \Countable
         return $this->template;
     }
 
+
     /**
      * Add a new TypeInterface to the Template
-     *
-     * @param  TypeInterface $item
-     * @return Template
      */
-    public function addItem(TypeInterface $item): Template
+    public function addItem(TypeInterface $item): self
     {
         $this->template[] = $item;
+
         return $this;
     }
+
 
     /**
      * Parse a sequence of objects from binary, using the current template.
      *
-     * @param  Parser $parser
      * @return mixed[]|Buffer[]|int[]|string[]
      */
     public function parse(Parser $parser): array
     {
-        if (0 == count($this->template)) {
+        if (\count($this->template) === 0) {
             throw new \RuntimeException('No items in template');
         }
 
         $values = [];
+
         foreach ($this->template as $reader) {
             $values[] = $reader->read($parser);
         }
@@ -75,23 +74,21 @@ class Template implements \Countable
         return $values;
     }
 
+
     /**
      * Write the array of $items to binary according to the template. They must
      * each be an instance of Buffer or implement SerializableInterface.
-     *
-     * @param  array $items
-     * @return BufferInterface
      */
     public function write(array $items): BufferInterface
     {
-        if (count($items) != count($this->template)) {
+        if (\count($items) !== \count($this->template)) {
             throw new \RuntimeException('Number of items must match template');
         }
 
         $binary = '';
 
         foreach ($this->template as $serializer) {
-            $item = array_shift($items);
+            $item = \array_shift($items);
             $binary .= $serializer->write($item);
         }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require __DIR__ . "/../vendor/autoload.php";
 
 use BitWasp\Buffertools\Buffer;
@@ -16,7 +18,7 @@ $set = [
     $parser->readBytes(1),
     $parser->readBytes(1),
     $parser->readBytes(1),
-    $parser->readBytes(4)
+    $parser->readBytes(4),
 ];
 
 foreach ($set as $item) {

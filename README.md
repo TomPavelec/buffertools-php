@@ -12,7 +12,7 @@ This library provides a `Buffer` and `Parser` class to make dealing with binary 
 
 ## Requirements:
 
- * PHP 7.0+
+ * PHP 8.0+
  * Composer
  * ext-gmp
 

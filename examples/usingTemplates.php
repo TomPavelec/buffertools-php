@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require __DIR__ . "/../vendor/autoload.php";
 
 use BitWasp\Buffertools\Buffer;
@@ -11,7 +13,7 @@ $setBuffer = new Buffer('aaabccdeee');
 $setParser = new Parser($setBuffer);
 
 // Read data into $set
-$set = (new TemplateFactory())
+$set = (new TemplateFactory)
     ->bytestring(3)
     ->bytestring(1)
     ->bytestring(2)
@@ -27,8 +29,8 @@ print_r($set);
 // write each member as a buffer
 // a structure-specific parser reads the internal structure (not needed for writing)
 
-$vector = (new TemplateFactory())
-    ->vector(function () {
+$vector = (new TemplateFactory)
+    ->vector(static function (): void {
     }) // can be null, since we're writing
     ->getTemplate()
     ->write([$set]);

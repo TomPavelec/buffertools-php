@@ -10,66 +10,83 @@ use BitWasp\Buffertools\Parser;
 class VarInt extends AbstractType
 {
     /**
-     * @param \GMP $integer
      * @return array
      */
-    public function solveWriteSize(\GMP $integer)
+    public function solveWriteSize(\GMP $integer): array
     {
-        if (gmp_cmp($integer, gmp_pow(gmp_init(2), 16)) < 0) {
+        if (\gmp_cmp($integer, \gmp_pow(\gmp_init(2), 16)) < 0) {
             return [new Uint16(ByteOrder::LE), 0xfd];
-        } else if (gmp_cmp($integer, gmp_pow(gmp_init(2), 32)) < 0) {
-            return [new Uint32(ByteOrder::LE), 0xfe];
-        } else if (gmp_cmp($integer, gmp_pow(gmp_init(2), 64)) < 0) {
-            return [new Uint64(ByteOrder::LE), 0xff];
-        } else {
-            throw new \InvalidArgumentException('Integer too large, exceeds 64 bit');
         }
+
+        if (\gmp_cmp($integer, \gmp_pow(\gmp_init(2), 32)) < 0) {
+            return [new Uint32(ByteOrder::LE), 0xfe];
+        }
+
+        if (\gmp_cmp($integer, \gmp_pow(\gmp_init(2), 64)) < 0) {
+            return [new Uint64(ByteOrder::LE), 0xff];
+        }
+
+        throw new \InvalidArgumentException('Integer too large, exceeds 64 bit');
     }
 
+
     /**
-     * @param \GMP $givenPrefix
      * @return UintInterface[]
+     *
      * @throws \InvalidArgumentException
      */
-    public function solveReadSize(\GMP $givenPrefix)
+    public function solveReadSize(\GMP $givenPrefix): array
     {
-        if (gmp_cmp($givenPrefix, 0xfd) === 0) {
+        if (\gmp_cmp($givenPrefix, 0xfd) === 0) {
             return [new Uint16(ByteOrder::LE)];
-        } else if (gmp_cmp($givenPrefix, 0xfe) === 0) {
+        }
+
+        if (\gmp_cmp($givenPrefix, 0xfe) === 0) {
             return [new Uint32(ByteOrder::LE)];
-        } else if (gmp_cmp($givenPrefix, 0xff) === 0) {
+        }
+
+        if (\gmp_cmp($givenPrefix, 0xff) === 0) {
             return [new Uint64(ByteOrder::LE)];
         }
 
         throw new \InvalidArgumentException('Unknown varint prefix');
     }
 
+
     /**
-     * {@inheritdoc}
-     * @see \BitWasp\Buffertools\Types\TypeInterface::write()
+     * {@inheritDoc}
+     *
+     * @see TypeInterface::write()
      */
-    public function write($integer): string
+    public function write(mixed $value): string
     {
-        $gmpInt = gmp_init($integer, 10);
-        if (gmp_cmp($gmpInt, gmp_init(0xfd, 10)) < 0) {
-            return pack("C", $integer);
+        $gmpInt = \gmp_init($value, 10);
+
+        if (\gmp_cmp($gmpInt, \gmp_init(0xfd, 10)) < 0) {
+            return \pack("C", $value);
         }
-        list ($int, $prefix) = $this->solveWriteSize($gmpInt);
-        return pack("C", $prefix) . $int->write($integer);
+
+        [$int, $prefix] = $this->solveWriteSize($gmpInt);
+
+        return \pack("C", $prefix) . $int->write($value);
     }
 
+
     /**
-     * {@inheritdoc}
-     * @see \BitWasp\Buffertools\Types\TypeInterface::read()
+     * {@inheritDoc}
+     *
+     * @see TypeInterface::read()
      */
-    public function read(Parser $parser)
+    public function read(Parser $parser): string
     {
-        $byte = unpack("C", $parser->readBytes(1)->getBinary())[1];
+        $byte = \unpack("C", $parser->readBytes(1)->getBinary())[1];
+
         if ($byte < 0xfd) {
-            return $byte;
+            return (string) $byte;
         }
 
-        list ($uint) = $this->solveReadSize(gmp_init($byte, 10));
+        [$uint] = $this->solveReadSize(\gmp_init($byte, 10));
+
         return $uint->read($parser);
     }
 }

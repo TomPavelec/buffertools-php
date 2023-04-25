@@ -11,40 +11,33 @@ use BitWasp\Buffertools\Parser;
 
 class VarString extends AbstractType
 {
-    /**
-     * @var VarInt
-     */
-    private $varint;
-
-    /**
-     * @param VarInt $varInt
-     */
-    public function __construct(VarInt $varInt)
+    public function __construct(private VarInt $varint)
     {
-        $this->varint = $varInt;
-        parent::__construct($varInt->getByteOrder());
+        parent::__construct($varint->getByteOrder());
     }
 
+
     /**
-     * {@inheritdoc}
-     * @see \BitWasp\Buffertools\Types\TypeInterface::write()
+     * {@inheritDoc}
+     *
+     * @see TypeInterface::write()
      */
-    public function write($buffer): string
+    public function write(mixed $value): string
     {
-        if (!$buffer instanceof BufferInterface) {
+        if (!$value instanceof BufferInterface) {
             throw new \InvalidArgumentException('Must provide a buffer');
         }
 
-        $binary = $this->varint->write($buffer->getSize()) . $buffer->getBinary();
-        return $binary;
+        return $this->varint->write($value->getSize()) . $value->getBinary();
     }
 
+
     /**
-     * {@inheritdoc}
-     * @see \BitWasp\Buffertools\Types\TypeInterface::write()
-     * @param Parser $parser
-     * @return \BitWasp\Buffertools\BufferInterface
-     * @throws \BitWasp\Buffertools\Exceptions\ParserOutOfRange
+     * {@inheritDoc}
+     *
+     * @see TypeInterface::write()
+     *
+     * @throws ParserOutOfRange
      * @throws \Exception
      */
     public function read(Parser $parser): BufferInterface
@@ -55,8 +48,8 @@ class VarString extends AbstractType
             throw new ParserOutOfRange("Insufficient data remaining for VarString");
         }
 
-        if (gmp_cmp(gmp_init($length, 10), gmp_init(0, 10)) == 0) {
-            return new Buffer();
+        if (\gmp_cmp(\gmp_init($length, 10), \gmp_init(0, 10)) === 0) {
+            return new Buffer;
         }
 
         return $parser->readBytes((int) $length);

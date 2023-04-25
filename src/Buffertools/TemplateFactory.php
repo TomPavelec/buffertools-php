@@ -6,348 +6,337 @@ namespace BitWasp\Buffertools;
 
 class TemplateFactory
 {
-    /**
-     * @var \BitWasp\Buffertools\Template
-     */
-    private $template;
-
-    /**
-     * @var TypeFactoryInterface
-     */
-    private $types;
+    private Template $template;
+    private TypeFactoryInterface|CachingTypeFactory $types;
 
     /**
      * TemplateFactory constructor.
-     * @param Template|null $template
-     * @param TypeFactoryInterface|null $typeFactory
      */
-    public function __construct(Template $template = null, TypeFactoryInterface $typeFactory = null)
+    public function __construct(?Template $template = null, ?TypeFactoryInterface $typeFactory = null)
     {
-        $this->template = $template ?: new Template();
-        $this->types = $typeFactory ?: new CachingTypeFactory();
+        $this->template = $template ?? new Template;
+        $this->types = $typeFactory ?? new CachingTypeFactory;
     }
+
 
     /**
      * Return the Template as it stands.
-     *
-     * @return Template
      */
-    public function getTemplate()
+    public function getTemplate(): Template
     {
         return $this->template;
     }
 
+
     /**
      * Add a Uint8 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function uint8()
+    public function uint8(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->uint8());
+
         return $this;
     }
+
 
     /**
      * Add a little-endian Uint8 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function uint8le(): TemplateFactory
+    public function uint8le(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->uint8le());
+
         return $this;
     }
+
 
     /**
      * Add a Uint16 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function uint16(): TemplateFactory
+    public function uint16(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->uint16());
+
         return $this;
     }
+
 
     /**
      * Add a little-endian Uint16 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function uint16le(): TemplateFactory
+    public function uint16le(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->uint16le());
+
         return $this;
     }
+
 
     /**
      * Add a Uint32 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function uint32(): TemplateFactory
+    public function uint32(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->uint32());
+
         return $this;
     }
+
 
     /**
      * Add a little-endian Uint32 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function uint32le(): TemplateFactory
+    public function uint32le(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->uint32le());
+
         return $this;
     }
+
 
     /**
      * Add a Uint64 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function uint64(): TemplateFactory
+    public function uint64(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->uint64());
+
         return $this;
     }
+
 
     /**
      * Add a little-endian Uint64 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function uint64le(): TemplateFactory
+    public function uint64le(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->uint64le());
+
         return $this;
     }
+
 
     /**
      * Add a Uint128 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function uint128(): TemplateFactory
+    public function uint128(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->uint128());
+
         return $this;
     }
+
 
     /**
      * Add a little-endian Uint128 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function uint128le(): TemplateFactory
+    public function uint128le(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->uint128le());
+
         return $this;
     }
+
 
     /**
      * Add a Uint256 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function uint256(): TemplateFactory
+    public function uint256(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->uint256());
+
         return $this;
     }
+
 
     /**
      * Add a little-endian Uint256 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function uint256le(): TemplateFactory
+    public function uint256le(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->uint256le());
+
         return $this;
     }
+
 
     /**
      * Add a int8 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function int8(): TemplateFactory
+    public function int8(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->int8());
+
         return $this;
     }
+
 
     /**
      * Add a little-endian Int8 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function int8le(): TemplateFactory
+    public function int8le(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->int8le());
+
         return $this;
     }
+
 
     /**
      * Add a int16 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function int16(): TemplateFactory
+    public function int16(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->int16());
+
         return $this;
     }
+
 
     /**
      * Add a little-endian Int16 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function int16le(): TemplateFactory
+    public function int16le(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->int16le());
+
         return $this;
     }
+
 
     /**
      * Add a int32 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function int32(): TemplateFactory
+    public function int32(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->int32());
+
         return $this;
     }
+
 
     /**
      * Add a little-endian Int serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function int32le(): TemplateFactory
+    public function int32le(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->int32le());
+
         return $this;
     }
+
 
     /**
      * Add a int64 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function int64(): TemplateFactory
+    public function int64(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->int64());
+
         return $this;
     }
+
 
     /**
      * Add a little-endian Int64 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function int64le(): TemplateFactory
+    public function int64le(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->int64le());
+
         return $this;
     }
+
 
     /**
      * Add a int128 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function int128(): TemplateFactory
+    public function int128(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->int128());
+
         return $this;
     }
+
 
     /**
      * Add a little-endian Int128 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function int128le(): TemplateFactory
+    public function int128le(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->int128le());
+
         return $this;
     }
+
 
     /**
      * Add a int256 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function int256(): TemplateFactory
+    public function int256(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->int256());
+
         return $this;
     }
+
 
     /**
      * Add a little-endian Int256 serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function int256le(): TemplateFactory
+    public function int256le(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->int256le());
+
         return $this;
     }
+
 
     /**
      * Add a VarInt serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function varint(): TemplateFactory
+    public function varint(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->varint());
+
         return $this;
     }
 
+
     /**
      * Add a VarString serializer to the template
-     *
-     * @return TemplateFactory
      */
-    public function varstring(): TemplateFactory
+    public function varstring(): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}());
+        $this->template->addItem($this->types->varstring());
+
         return $this;
     }
+
 
     /**
      * Add a byte string serializer to the template. This serializer requires a length to
      * pad/truncate to.
-     *
-     * @param  int $length
-     * @return TemplateFactory
      */
-    public function bytestring(int $length): TemplateFactory
+    public function bytestring(int $length): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}($length));
+        $this->template->addItem($this->types->bytestring($length));
+
         return $this;
     }
+
 
     /**
      * Add a little-endian byte string serializer to the template. This serializer requires
      * a length to pad/truncate to.
-     *
-     * @param  int $length
-     * @return TemplateFactory
      */
-    public function bytestringle(int $length): TemplateFactory
+    public function bytestringle(int $length): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}($length));
+        $this->template->addItem($this->types->bytestringle($length));
+
         return $this;
     }
+
 
     /**
      * Add a vector serializer to the template. A $readHandler must be provided if the
@@ -355,13 +344,11 @@ class TemplateFactory
      *
      * The $readHandler should operate on the parser reference, reading the bytes for each
      * item in the collection.
-     *
-     * @param  callable $readHandler
-     * @return TemplateFactory
      */
-    public function vector(callable $readHandler): TemplateFactory
+    public function vector(callable $readHandler): self
     {
-        $this->template->addItem($this->types->{__FUNCTION__}($readHandler));
+        $this->template->addItem($this->types->vector($readHandler));
+
         return $this;
     }
 }

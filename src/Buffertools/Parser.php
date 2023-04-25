@@ -8,114 +8,96 @@ use BitWasp\Buffertools\Exceptions\ParserOutOfRange;
 
 class Parser
 {
-    /**
-     * @var string
-     */
-    private $string;
-
-    /**
-     * @var int
-     */
-    private $size = 0;
-
-    /**
-     * @var int
-     */
-    private $position = 0;
+    private string $string;
+    private int $size;
+    private int $position;
 
     /**
      * Instantiate class, optionally taking Buffer or HEX.
-     *
-     * @param null|string|BufferInterface $input
      */
-    public function __construct($input = null)
+    public function __construct(null|string|BufferInterface $input = null)
     {
-        if (null === $input) {
+        if ($input === null) {
             $input = '';
         }
 
-        if (is_string($input)) {
-            $bin = Buffer::hex($input, null)->getBinary();
-        } elseif ($input instanceof BufferInterface) {
-            $bin = $input->getBinary();
-        } else {
-            throw new \InvalidArgumentException("Invalid argument to Parser");
-        }
+        $bin = \is_string($input)
+            ? Buffer::hex($input, null)->getBinary()
+            : $input->getBinary();
 
         $this->string = $bin;
         $this->position = 0;
-        $this->size = strlen($this->string);
+        $this->size = \strlen($this->string);
     }
+
 
     /**
      * Get the position pointer of the parser - ie, how many bytes from 0
-     *
-     * @return int
      */
     public function getPosition(): int
     {
         return $this->position;
     }
 
+
     /**
      * Get the total size of the parser
-     *
-     * @return int
      */
-    public function getSize()
+    public function getSize(): int
     {
         return $this->size;
     }
 
+
     /**
      * Parse $bytes bytes from the string, and return the obtained buffer
      *
-     * @param  int $numBytes
-     * @param  bool $flipBytes
-     * @return BufferInterface
      * @throws \Exception
      */
     public function readBytes(int $numBytes, bool $flipBytes = false): BufferInterface
     {
-        $string = substr($this->string, $this->getPosition(), $numBytes);
-        $length = strlen($string);
+        $string = \substr($this->string, $this->getPosition(), $numBytes);
+        $length = \strlen($string);
 
         if ($length === 0) {
             throw new ParserOutOfRange('Could not parse string of required length (empty)');
-        } elseif ($length < $numBytes) {
+        }
+
+        if ($length < $numBytes) {
             throw new ParserOutOfRange('Could not parse string of required length (too short)');
         }
 
         $this->position += $numBytes;
 
         if ($flipBytes) {
-            $string = Buffertools::flipBytes($string);
+            $string = Buffertools::flipBytesString($string);
             /** @var string $string */
         }
 
         return new Buffer($string, $length);
     }
 
+
     /**
      * Write $data as $bytes bytes. Can be flipped if needed.
      *
-     * @param  integer $numBytes - number of bytes to write
-     * @param  SerializableInterface|BufferInterface|string $data - buffer, serializable or hex
-     * @param  bool $flipBytes
-     * @return Parser
+     * @param int $numBytes - number of bytes to write
+     * @param SerializableInterface|BufferInterface|string $data - buffer, serializable or hex
      */
-    public function writeBytes(int $numBytes, $data, bool $flipBytes = false): Parser
+    public function writeBytes(
+        int $numBytes,
+        SerializableInterface|BufferInterface|string $data,
+        bool $flipBytes = false,
+    ): self
     {
         // Treat $data to ensure it's a buffer, with the correct size
         if ($data instanceof SerializableInterface) {
             $data = $data->getBuffer();
         }
 
-        if (is_string($data)) {
+        if (\is_string($data)) {
             // Convert to a buffer
             $data = Buffer::hex($data, $numBytes);
-        } else if (!($data instanceof BufferInterface)) {
-            throw new \RuntimeException('Invalid data passed to Parser::writeBytes');
         }
 
         $this->writeBuffer($numBytes, $data, $flipBytes);
@@ -123,29 +105,20 @@ class Parser
         return $this;
     }
 
+
     /**
      * Write $data as $bytes bytes. Can be flipped if needed.
-     *
-     * @param  integer $numBytes
-     * @param  string $data
-     * @param  bool $flipBytes
-     * @return Parser
      */
-    public function writeRawBinary(int $numBytes, string $data, bool $flipBytes = false): Parser
+    public function writeRawBinary(int $numBytes, string $data, bool $flipBytes = false): self
     {
         return $this->writeBuffer($numBytes, new Buffer($data, $numBytes), $flipBytes);
     }
 
-    /**
-     * @param BufferInterface $buffer
-     * @param bool $flipBytes
-     * @param int $numBytes
-     * @return Parser
-     */
-    public function writeBuffer(int $numBytes, BufferInterface $buffer, bool $flipBytes = false): Parser
+
+    public function writeBuffer(int $numBytes, BufferInterface $buffer, bool $flipBytes = false): self
     {
         // only create a new buffer if the size does not match
-        if ($buffer->getSize() != $numBytes) {
+        if ($buffer->getSize() !== $numBytes) {
             $buffer = new Buffer($buffer->getBinary(), $numBytes);
         }
 
@@ -154,51 +127,43 @@ class Parser
         return $this;
     }
 
-    /**
-     * @param BufferInterface $buffer
-     * @param bool $flipBytes
-     * @return Parser
-     */
-    public function appendBuffer(BufferInterface $buffer, bool $flipBytes = false): Parser
+
+    public function appendBuffer(BufferInterface $buffer, bool $flipBytes = false): self
     {
         $this->appendBinary($buffer->getBinary(), $flipBytes);
+
         return $this;
     }
 
-    /**
-     * @param string $binary
-     * @param bool $flipBytes
-     * @return Parser
-     */
-    public function appendBinary(string $binary, bool $flipBytes = false): Parser
+
+    public function appendBinary(string $binary, bool $flipBytes = false): self
     {
         if ($flipBytes) {
-            $binary = Buffertools::flipBytes($binary);
+            $binary = Buffertools::flipBytesString($binary);
         }
 
         $this->string .= $binary;
-        $this->size += strlen($binary);
+        $this->size += \strlen($binary);
+
         return $this;
     }
 
+
     /**
      * Take an array containing serializable objects.
+     *
      * @param SerializableInterface[]|BufferInterface[] $serializable
-     * @return Parser
      */
-    public function writeArray(array $serializable): Parser
+    public function writeArray(array $serializable): self
     {
-        $parser = new Parser(Buffertools::numToVarInt(count($serializable)));
+        $parser = new self(Buffertools::numToVarInt(\count($serializable)));
+
         foreach ($serializable as $object) {
             if ($object instanceof SerializableInterface) {
                 $object = $object->getBuffer();
             }
 
-            if ($object instanceof BufferInterface) {
-                $parser->writeBytes($object->getSize(), $object);
-            } else {
-                throw new \RuntimeException('Input to writeArray must be Buffer[], or SerializableInterface[]');
-            }
+            $parser->writeBytes($object->getSize(), $object);
         }
 
         $this->string .= $parser->getBuffer()->getBinary();
@@ -207,10 +172,9 @@ class Parser
         return $this;
     }
 
+
     /**
      * Return the string as a buffer
-     *
-     * @return BufferInterface
      */
     public function getBuffer(): BufferInterface
     {

@@ -13,9 +13,6 @@ use BitWasp\Buffertools\Types\ByteString;
 
 class ByteStringTest extends BinaryTest
 {
-    /**
-     * @return array
-     */
     public function getVectors(): array
     {
         return [
@@ -25,40 +22,38 @@ class ByteStringTest extends BinaryTest
         ];
     }
 
+
     /**
      * @dataProvider getVectors
-     * @param int $size
-     * @param string $string
      */
-    public function testByteString(int $size, string $string)
+    public function testByteString(int $size, string $string): void
     {
         $buffer = Buffer::hex($string, $size);
 
         $t = new ByteString($size);
         $out = $t->write($buffer);
 
-        $this->assertEquals(pack("H*", $string), $out);
+        self::assertEquals(\pack("H*", $string), $out);
 
         $parser = new Parser(new Buffer($out));
-        $this->assertEquals($string, $t->read($parser)->getHex());
+        self::assertEquals($string, $t->read($parser)->getHex());
     }
+
 
     /**
      * @dataProvider getVectors
-     * @param int $size
-     * @param string $string
      */
-    public function testByteStringLe(int $size, string $string)
+    public function testByteStringLe(int $size, string $string): void
     {
         $buffer = Buffer::hex($string, $size);
 
         $t = new ByteString($size, ByteOrder::LE);
         $out = $t->write($buffer);
 
-        $eFlipped = Buffertools::flipBytes(pack("H*", $string));
-        $this->assertEquals($eFlipped, $out);
+        $eFlipped = Buffertools::flipBytesString(\pack("H*", $string));
+        self::assertEquals($eFlipped, $out);
 
         $parser = new Parser(new Buffer($out));
-        $this->assertEquals($string, $t->read($parser)->getHex());
+        self::assertEquals($string, $t->read($parser)->getHex());
     }
 }

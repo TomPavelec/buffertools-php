@@ -11,15 +11,12 @@ use BitWasp\Buffertools\Types\Vector;
 
 class TemplateFactoryTest extends BinaryTest
 {
-    /**
-     * @return array
-     */
     public function getTestVectors(): array
     {
         $vectors = [];
 
-        for ($i = 8; $i <= 256; $i = $i * 2) {
-            foreach (array('', 'le') as $byteOrder) {
+        for ($i = 8; $i <= 256; $i *= 2) {
+            foreach (['', 'le'] as $byteOrder) {
                 $vectors[] = [
                     'uint' . $i . $byteOrder,
                     '\BitWasp\Buffertools\Types\Uint' . $i,
@@ -33,43 +30,41 @@ class TemplateFactoryTest extends BinaryTest
 
         $vectors[] = [
             'varint',
-            VarInt::class
+            VarInt::class,
         ];
 
         $vectors[] = [
             'varstring',
-            VarString::class
+            VarString::class,
         ];
 
         return $vectors;
     }
 
+
     /**
      * @dataProvider getTestVectors
-     * @param string $function
-     * @param string $eClass
      */
-    public function testTemplateUint(string $function, string $eClass)
+    public function testTemplateUint(string $function, string $eClass): void
     {
         $factory = new TemplateFactory(null);
         $factory->$function();
         $template = $factory->getTemplate();
-        $this->assertEquals(1, count($template));
+        self::assertEquals(1, \count($template));
         $template = $factory->getTemplate()->getItems();
-        $this->assertInstanceOf($eClass, $template[0]);
+        self::assertInstanceOf($eClass, \reset($template));
     }
 
-    public function testVector()
+
+    public function testVector(): void
     {
         $factory = new TemplateFactory(null);
         $factory->vector(
-            function () {
-                return;
-            }
+            static fn () => null,
         );
         $template = $factory->getTemplate();
-        $this->assertEquals(1, count($template));
+        self::assertEquals(1, \count($template));
         $template = $factory->getTemplate()->getItems();
-        $this->assertInstanceOf(Vector::class, $template[0]);
+        self::assertInstanceOf(Vector::class, $template[0]);
     }
 }

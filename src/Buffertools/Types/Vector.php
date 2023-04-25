@@ -8,57 +8,51 @@ use BitWasp\Buffertools\Parser;
 
 class Vector extends AbstractType
 {
-    /**
-     * @var VarInt
-     */
-    private $varint;
-
-    /**
-     * @var callable
-     */
+    /** @var callable */
     private $readFxn;
 
-    /**
-     * @param VarInt   $varInt
-     * @param callable $readFunction
-     */
-    public function __construct(VarInt $varInt, callable $readFunction)
+    public function __construct(private VarInt $varint, callable $readFunction)
     {
-        $this->varint = $varInt;
         $this->readFxn = $readFunction;
-        parent::__construct($varInt->getByteOrder());
+
+        parent::__construct($varint->getByteOrder());
     }
 
+
     /**
-     * {@inheritdoc}
-     * @see \BitWasp\Buffertools\Types\TypeInterface::write()
+     * {@inheritDoc}
+     *
+     * @see TypeInterface::write()
      */
-    public function write($items): string
+    public function write(mixed $value): string
     {
-        if (false === is_array($items)) {
+        if (\is_array($value) === false) {
             throw new \InvalidArgumentException('Vector::write() must be supplied with an array');
         }
 
-        $parser = new Parser();
+        $parser = new Parser;
+
         return $parser
-            ->writeArray($items)
+            ->writeArray($value)
             ->getBuffer()
             ->getBinary();
     }
 
+
     /**
-     * {@inheritdoc}
-     * @see \BitWasp\Buffertools\Types\TypeInterface::read()
-     * @param Parser $parser
-     * @return array
+     * {@inheritDoc}
+     *
+     * @see TypeInterface::read()
+     *
      * @throws \Exception
      */
     public function read(Parser $parser): array
     {
-        $results = array();
+        $results = [];
         $handler = $this->readFxn;
 
         $varInt = $this->varint->read($parser);
+
         for ($i = 0; $i < $varInt; $i++) {
             $results[] = $handler($parser);
         }

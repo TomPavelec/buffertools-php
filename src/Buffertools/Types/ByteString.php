@@ -11,96 +11,77 @@ use BitWasp\Buffertools\Parser;
 
 class ByteString extends AbstractType
 {
-    /**
-     * @var int|string
-     */
-    private $length;
-
-    /**
-     * @param int           $length
-     * @param int           $byteOrder
-     */
-    public function __construct(int $length, int $byteOrder = ByteOrder::BE)
+    public function __construct(private int $length, int $byteOrder = ByteOrder::BE)
     {
-        $this->length = $length;
         parent::__construct($byteOrder);
     }
 
-    /**
-     * @param BufferInterface $string
-     * @return string
-     */
+
     public function writeBits(BufferInterface $string): string
     {
-        $bits = str_pad(
-            gmp_strval(gmp_init($string->getHex(), 16), 2),
+        return \str_pad(
+            \gmp_strval(\gmp_init($string->getHex(), 16), 2),
             $this->length * 8,
             '0',
-            STR_PAD_LEFT
+            STR_PAD_LEFT,
         );
-
-        return $bits;
     }
 
+
     /**
-     * @param Buffer $string
-     * @return string
      * @throws \Exception
      */
-    public function write($string): string
+    public function write(mixed $value): string
     {
-        if (!($string instanceof Buffer)) {
+        if (!($value instanceof Buffer)) {
             throw new \InvalidArgumentException('FixedLengthString::write() must be passed a Buffer');
         }
 
         $bits = $this->isBigEndian()
-            ? $this->writeBits($string)
-            : $this->flipBits($this->writeBits($string));
+            ? $this->writeBits($value)
+            : $this->flipBits($this->writeBits($value));
 
-        $hex = str_pad(
-            gmp_strval(gmp_init($bits, 2), 16),
+        $hex = \str_pad(
+            \gmp_strval(\gmp_init($bits, 2), 16),
             $this->length * 2,
             '0',
-            STR_PAD_LEFT
+            STR_PAD_LEFT,
         );
 
-        return pack("H*", $hex);
+        return \pack("H*", $hex);
     }
 
-    /**
-     * @param BufferInterface $buffer
-     * @return string
-     */
+
     public function readBits(BufferInterface $buffer): string
     {
-        return str_pad(
-            gmp_strval(gmp_init($buffer->getHex(), 16), 2),
+        return \str_pad(
+            \gmp_strval(\gmp_init($buffer->getHex(), 16), 2),
             $this->length * 8,
             '0',
-            STR_PAD_LEFT
+            STR_PAD_LEFT,
         );
     }
 
+
     /**
-     * @param Parser $parser
-     * @return BufferInterface
      * @throws \BitWasp\Buffertools\Exceptions\ParserOutOfRange
      */
     public function read(Parser $parser): BufferInterface
     {
         $bits = $this->readBits($parser->readBytes($this->length));
+
         if (!$this->isBigEndian()) {
             $bits = $this->flipBits($bits);
         }
 
         return Buffer::hex(
-            str_pad(
-                gmp_strval(gmp_init($bits, 2), 16),
+            \str_pad(
+                \gmp_strval(\gmp_init($bits, 2), 16),
                 $this->length * 2,
                 '0',
-                STR_PAD_LEFT
+                STR_PAD_LEFT,
             ),
-            $this->length
+            $this->length,
         );
     }
 }

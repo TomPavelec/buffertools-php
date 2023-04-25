@@ -6,8 +6,5 @@ namespace BitWasp\Buffertools;
 
 interface SerializableInterface
 {
-    /**
-     * @return Buffer
-     */
-    public function getBuffer();
+    public function getBuffer(): BufferInterface;
 }

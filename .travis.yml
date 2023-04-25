@@ -1,11 +1,9 @@
 language: php
 
 php:
-  - 7
-  - 7.1
-  - 7.2
-  - 7.3
-  - 7.4snapshot
+  - 8
+  - 8.1
+  - 8.2
 
 dist: trusty
 
@@ -16,9 +14,9 @@ install:
   - composer install --prefer-source --dev
 
 script:
-  - php vendor/bin/phpunit
-  - vendor/bin/phpstan analyze -l 4 src tests examples
-  - php vendor/bin/phpcs -n --standard=PSR1,PSR2 --report=full src/ tests/ examples/
+  - make test
+  - make stan
+  - make cs
   - ./validate_examples.sh
 
 after_success:

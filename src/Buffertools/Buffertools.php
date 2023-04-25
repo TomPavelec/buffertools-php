@@ -7,20 +7,18 @@ namespace BitWasp\Buffertools;
 class Buffertools
 {
     /**
-     * @param int $decimal
-     * @return string
      * @throws \Exception
      */
     public static function numToVarIntBin(int $decimal): string
     {
         if ($decimal < 0xfd) {
-            $bin = chr($decimal);
+            $bin = \chr($decimal);
         } elseif ($decimal <= 0xffff) {
             // Uint16
-            $bin = pack("Cv", 0xfd, $decimal);
+            $bin = \pack("Cv", 0xfd, $decimal);
         } elseif ($decimal <= 0xffffffff) {
             // Uint32
-            $bin = pack("CV", 0xfe, $decimal);
+            $bin = \pack("CV", 0xfe, $decimal);
         } else {
             // Todo, support for 64bit integers
             throw new \Exception('numToVarInt(): Integer too large');
@@ -29,11 +27,10 @@ class Buffertools
         return $bin;
     }
 
+
     /**
      * Convert a decimal number into a VarInt Buffer
      *
-     * @param  integer $decimal
-     * @return BufferInterface
      * @throws \Exception
      */
     public static function numToVarInt(int $decimal): BufferInterface
@@ -41,38 +38,42 @@ class Buffertools
         return new Buffer(static::numToVarIntBin($decimal));
     }
 
+
     /**
-     * Flip byte order of this binary string. Accepts a string or Buffer,
-     * and will return whatever type it was given.
-     *
-     * @param  string|BufferInterface $bytes
-     * @return string|BufferInterface
+     * Flip byte order of this binary string.
      */
-    public static function flipBytes($bytes)
+    public static function flipBytes(
+        BufferInterface $bytes,
+    ): BufferInterface
     {
-        $isBuffer = $bytes instanceof BufferInterface;
-        if ($isBuffer) {
-            $bytes = $bytes->getBinary();
-        }
-
-        $flipped = implode('', array_reverse(str_split($bytes, 1)));
-        if ($isBuffer) {
-            $flipped = new Buffer($flipped);
-        }
-
-        return $flipped;
+        return new Buffer(
+            self::flipBytesString(
+                $bytes->getBinary(),
+            ),
+        );
     }
 
+
     /**
-     * @param BufferInterface $buffer1
-     * @param BufferInterface $buffer2
-     * @param int|null        $size
-     * @return BufferInterface
+     * Flip byte order of this binary string.
      */
-    public static function concat(BufferInterface $buffer1, BufferInterface $buffer2, int $size = null)
+    public static function flipBytesString(
+        string $bytes,
+    ): string
+    {
+        return \implode('', \array_reverse(\str_split($bytes, 1)));
+    }
+
+
+    public static function concat(
+        BufferInterface $buffer1,
+        BufferInterface $buffer2,
+        ?int $size = null,
+    ): BufferInterface
     {
         return new Buffer($buffer1->getBinary() . $buffer2->getBinary(), $size);
     }
+
 
     /**
      *  What if we don't have two buffers, or want to guard the types of the
@@ -88,27 +89,30 @@ class Buffertools
      * and which optionally type-hint the items in the array.
      *
      * @param array $items
-     * @param callable|null $convertToBuffer
-     * @return array
      */
-    public static function sort(array $items, callable $convertToBuffer = null): array
+    public static function sort(array $items, ?callable $convertToBuffer = null): array
     {
-        if (null == $convertToBuffer) {
-            $convertToBuffer = function ($value) {
+        if ($convertToBuffer === null) {
+            $convertToBuffer = static function ($value) {
                 if ($value instanceof BufferInterface) {
                     return $value;
                 }
+
                 if ($value instanceof SerializableInterface) {
                     return $value->getBuffer();
                 }
+
                 throw new \RuntimeException('Requested to sort unknown type');
             };
         }
 
-        usort($items, function ($a, $b) use ($convertToBuffer) {
+        \usort($items, static function ($a, $b) use ($convertToBuffer) {
             $av = $convertToBuffer($a)->getBinary();
             $bv = $convertToBuffer($b)->getBinary();
-            return $av == $bv ? 0 : ($av > $bv ? 1 : -1);
+
+            return $av === $bv
+                ? 0
+                : ($av > $bv ? 1 : -1);
         });
 
         return $items;
