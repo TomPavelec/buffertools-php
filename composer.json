@@ -23,7 +23,7 @@
         }
     },
     "require": {
-        "php-64bit": ">=8.0 <8.3",
+        "php-64bit": ">=8.0",
         "ext-gmp": "*"
     },
     "require-dev": {
